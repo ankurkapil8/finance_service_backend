@@ -9,7 +9,7 @@ var connection = mysql.createConnection({
   host     : 'database-1.cghjxv5prf93.ap-south-1.rds.amazonaws.com',
   user     : 'admin',
   password : 'JxtIHMlWKJPDawlnjnqs',
-  database: ''
+  database: 'micro_service_prod'
 });
  
 connection.connect(function(err) {
