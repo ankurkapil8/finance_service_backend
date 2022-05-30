@@ -8,7 +8,7 @@ const { async } = require("q");
 var EMIs = require("./EMIs");
 const { date } = require("@hapi/joi");
 var moment = require('moment');
-
+const multer = require('multer')
 // add loan application
 app.post("/applyGroupLoan", async(req, res, next) => {
     try {
@@ -173,6 +173,22 @@ app.post("/applyGroupLoan", async(req, res, next) => {
         message: error.message
       });
     }
-  })
-
+  });
+  var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+       cb(null, 'uploads');
+    },
+    filename: function (req, file, cb) {
+       cb(null, Date.now() + '-' + file.originalname);
+    }
+  });
+  var upload = multer({ storage: storage });
+  app.post('/image-upload', upload.single('image'),(req, res) => {
+    const image = req.image;
+    return res.status(200).json({
+      message: 'File uploaded successfully.'
+    });
+  
+  });
+  
   module.exports = app;
