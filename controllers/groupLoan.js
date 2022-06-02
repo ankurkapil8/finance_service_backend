@@ -88,7 +88,8 @@ app.post("/applyGroupLoan", async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         id: Joi.required(),
-        actionType:Joi.required()
+        actionType:Joi.required(),
+        disburseDate:Joi.required()
       }).unknown(true);  
       const validationResult = joiSchema.validate(req.body, { abortEarly: false });
       if(validationResult.error){
@@ -108,7 +109,7 @@ app.post("/applyGroupLoan", async(req, res, next) => {
               response[0][0].Tenure,
               response[0][0].interest_rate,
               response[0][0].EMI_payout,
-              response[0][0].application_date,
+              disburseDate,
               response[0][0].week,
               response[0][0].day,
               );
