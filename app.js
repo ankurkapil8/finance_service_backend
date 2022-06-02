@@ -3,7 +3,7 @@ var app = express();
 const bodyParser = require('body-parser');
 var path = require('path');
 var http = require("http");
-
+var cors = require('cors')
 require("./config");
 // var sendObj = require("./util/sendMail")
 // const financeRoutes = require("./controllers/finance");
@@ -44,6 +44,7 @@ require("./config");
   });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors())
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/uploads', express.static('uploads'));
 //app.use("/api/finance",financeRoutes);
