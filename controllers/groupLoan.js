@@ -8,7 +8,6 @@ const { async } = require("q");
 var EMIs = require("./EMIs");
 const { date } = require("@hapi/joi");
 var moment = require('moment');
-
 // add loan application
 app.post("/applyGroupLoan", async(req, res, next) => {
     try {
@@ -89,7 +88,8 @@ app.post("/applyGroupLoan", async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         id: Joi.required(),
-        actionType:Joi.required()
+        actionType:Joi.required(),
+        disburseDate:Joi.required()
       }).unknown(true);  
       const validationResult = joiSchema.validate(req.body, { abortEarly: false });
       if(validationResult.error){
@@ -100,16 +100,18 @@ app.post("/applyGroupLoan", async(req, res, next) => {
       try{
         let EMIsDates = [];
         let formatedEmis = [];
-        let response = await GroupLoanModel.disburseLoan(req.body.id, req.body.actionType);
-        console.log(response);
+        let disburseDate = moment(req.body.disburseDate).format("yyyy-MM-DD")
+        console.log(disburseDate);
+        let response = await GroupLoanModel.disburseLoan(req.body.id, req.body.actionType, disburseDate);
+        //console.log(response);
         if(req.body.actionType == 1){
-          console.log("in action");
+          //console.log("in action");
             EMIsDates = EMIs.calculateEMIFlat(
               response[0][0].loan_amount,
               response[0][0].Tenure,
               response[0][0].interest_rate,
               response[0][0].EMI_payout,
-              response[0][0].application_date,
+              new Date(req.body.disburseDate),
               response[0][0].week,
               response[0][0].day,
               );
@@ -173,6 +175,6 @@ app.post("/applyGroupLoan", async(req, res, next) => {
         message: error.message
       });
     }
-  })
-
+  });
+  
   module.exports = app;
