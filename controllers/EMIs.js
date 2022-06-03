@@ -187,7 +187,6 @@ app.get("/entry/:loanAccountNo", async(req, res, next) => {
 })
 app.get("/allEmis/:dueDate", async(req, res, next) => {
   try {
-
       let dueDate = req.params.dueDate?req.params.dueDate:new Date();
       let filter = `EMI_date = "${dueDate}"`;
       let paidCount = 0;
@@ -200,7 +199,6 @@ app.get("/allEmis/:dueDate", async(req, res, next) => {
           notPaidCount = notPaidCount+1;
         }
       });
-
       return res.status(200).json({
           message: response,
           paidCount:paidCount,
@@ -211,8 +209,29 @@ app.get("/allEmis/:dueDate", async(req, res, next) => {
           message: error.message
         });
       }
-
 })
 
+app.get("/paidEmi/:month/:year", async(req, res, next) => {
+  try {
+      let month = req.params.month;
+      let year = req.params.year;
+      let response = await EmiModel.getPaidEmiByMonthYear(month, year);
+      const totalInt = response.reduce(
+        (previousValue, currentValue) => previousValue + currentValue.int_amount,0
+      )
+      const totalPrincipal = response.reduce(
+        (previousValue, currentValue) => previousValue + currentValue.principal,0
+      )
+      return res.status(200).json({
+          records: response,
+          total_interest_earned:totalInt,
+          total_principal_earned:totalPrincipal
+        });
+  }catch (error) {
+        return res.status(500).json({
+          message: error.message
+        });
+      }
+})
 app.calculateEMIFlat = calculateEMIFlat;
 module.exports = app;

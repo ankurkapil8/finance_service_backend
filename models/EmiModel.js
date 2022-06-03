@@ -45,4 +45,14 @@ function save(data) {
     })
     })
   }
-  module.exports = {save:save, getAll:getAll, update:update, getEmiData:getEmiData};
+  function getPaidEmiByMonthYear(month, year){
+    return new Promise(function (resolve, reject) {
+      let query=connection.query(`SELECT * FROM ${TableName} WHERE MONTH(EMI_date)=${month} and YEAR(EMI_date)=${year}`, (err, result) => {
+        console.log(query.sql);
+      if (err) reject(err);
+      resolve(result);
+    })
+    })
+  }
+
+  module.exports = {save:save, getAll:getAll, update:update, getEmiData:getEmiData, getPaidEmiByMonthYear:getPaidEmiByMonthYear};
