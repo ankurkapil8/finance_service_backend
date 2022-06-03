@@ -100,10 +100,12 @@ app.post("/applyGroupLoan", async(req, res, next) => {
       try{
         let EMIsDates = [];
         let formatedEmis = [];
-        let response = await GroupLoanModel.disburseLoan(req.body.id, req.body.actionType);
-        console.log(response);
+        let disburseDate = moment(req.body.disburseDate).format("yyyy-MM-DD")
+        console.log(disburseDate);
+        let response = await GroupLoanModel.disburseLoan(req.body.id, req.body.actionType, disburseDate);
+        //console.log(response);
         if(req.body.actionType == 1){
-          console.log("in action");
+          //console.log("in action");
             EMIsDates = EMIs.calculateEMIFlat(
               response[0][0].loan_amount,
               response[0][0].Tenure,

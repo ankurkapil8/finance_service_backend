@@ -37,9 +37,9 @@ function save(data) {
     })
   }
 
-  function disburseLoan(id, actionType){
+  function disburseLoan(id, actionType,disburseDate){
     return new Promise(function (resolve, reject) {
-        let qry=connection.query(`CALL disburseLoan(?, ?);`,[id,actionType], (err, result) => {
+        let qry=connection.query(`CALL disburseLoan(?, ?, ?);`,[id,actionType,disburseDate], (err, result) => {
        console.log(qry.sql);
         if (err) reject(err);
       resolve(result);
