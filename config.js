@@ -1,15 +1,16 @@
 var Q = require('q');
 var mysql = require('mysql');
+require('dotenv').config()
 const connectionParams={
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true 
 }
 var connection = mysql.createConnection({
-  host     : 'database-1.cghjxv5prf93.ap-south-1.rds.amazonaws.com',
-  user     : 'admin',
-  password : 'JxtIHMlWKJPDawlnjnqs',
-  database: 'micro_service_dev'
+  host     : process.env.DATABASE_HOST,
+  user     : process.env.DATABASE_USER,
+  password : process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE_NAME
 });
  
 connection.connect(function(err) {

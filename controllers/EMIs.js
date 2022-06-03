@@ -5,7 +5,8 @@ const Joi = require('@hapi/joi');
 var EmiModel = require('../models/EmiModel');
 const { async } = require("q");
 var moment = require('moment');
-app.post("/calculateEMI", async(req, res, next) => {
+var verifyToken = require('../util/auth_middleware');
+app.post("/calculateEMI", verifyToken, async(req, res, next) => {
     try {
     const joiSchema = Joi.object({
         loan_amount: Joi.required(),
@@ -115,7 +116,7 @@ app.post("/calculateEMI", async(req, res, next) => {
     console.log(error);
   }
 }
-app.get("/dueEMIs/:dueDate", async(req, res, next) => {
+app.get("/dueEMIs/:dueDate", verifyToken,async(req, res, next) => {
   try {
 
       let dueDate = req.params.dueDate?req.params.dueDate:new Date();
@@ -131,7 +132,7 @@ app.get("/dueEMIs/:dueDate", async(req, res, next) => {
       }
 
 })
-app.put("/entry", async(req, res, next) => {
+app.put("/entry", verifyToken, async(req, res, next) => {
   try {
     const joiSchema = Joi.object({
       id: Joi.required(),
@@ -161,7 +162,7 @@ app.put("/entry", async(req, res, next) => {
 }
 
 });
-app.get("/entry/:loanAccountNo", async(req, res, next) => {
+app.get("/entry/:loanAccountNo", verifyToken, async(req, res, next) => {
   try {
     const joiSchema = Joi.object({
       loanAccountNo: Joi.required(),
@@ -185,7 +186,7 @@ app.get("/entry/:loanAccountNo", async(req, res, next) => {
       }
 
 })
-app.get("/allEmis/:dueDate", async(req, res, next) => {
+app.get("/allEmis/:dueDate", verifyToken, async(req, res, next) => {
   try {
       let dueDate = req.params.dueDate?req.params.dueDate:new Date();
       let filter = `EMI_date = "${dueDate}"`;
@@ -211,7 +212,7 @@ app.get("/allEmis/:dueDate", async(req, res, next) => {
       }
 })
 
-app.get("/paidEmi/:month/:year", async(req, res, next) => {
+app.get("/paidEmi/:month/:year", verifyToken, async(req, res, next) => {
   try {
       let month = req.params.month;
       let year = req.params.year;

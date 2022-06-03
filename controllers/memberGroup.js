@@ -4,8 +4,8 @@ const appE = express();
 const Joi = require('@hapi/joi');
 var MemberGroupModel = require('../models/MemberGroups');
 const { async } = require("q");
-
-app.post("/entry", async(req, res, next) => {
+var verifyToken = require('../util/auth_middleware');
+app.post("/entry", verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         group_name: Joi.required(),
@@ -44,7 +44,7 @@ app.post("/entry", async(req, res, next) => {
   
   });
 
-  app.get("/entry", async(req, res, next) => {
+  app.get("/entry", verifyToken, async(req, res, next) => {
     try{
         let response = await MemberGroupModel.getAll();
         return res.status(200).json({
@@ -58,7 +58,7 @@ app.post("/entry", async(req, res, next) => {
     }
   })
 
-  app.delete("/entry/:group_code", async(req, res, next) => {
+  app.delete("/entry/:group_code", verifyToken, async(req, res, next) => {
     try{
         const joiSchema = Joi.object({
             group_code: Joi.required(),
@@ -82,7 +82,7 @@ app.post("/entry", async(req, res, next) => {
     }
   })
 
-  app.get("/memberByGroupCode/:group_code", async(req, res, next) => {
+  app.get("/memberByGroupCode/:group_code", verifyToken, async(req, res, next) => {
     try{
       const joiSchema = Joi.object({
         group_code: Joi.required(),

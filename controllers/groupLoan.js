@@ -8,8 +8,9 @@ const { async } = require("q");
 var EMIs = require("./EMIs");
 const { date } = require("@hapi/joi");
 var moment = require('moment');
+var verifyToken = require('../util/auth_middleware');
 // add loan application
-app.post("/applyGroupLoan", async(req, res, next) => {
+app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         application_date: Joi.required(),
@@ -55,7 +56,7 @@ app.post("/applyGroupLoan", async(req, res, next) => {
     }
   
   });
-  app.post("/approveLoan", async(req, res, next) => {
+  app.post("/approveLoan", verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         id: Joi.required(),
@@ -84,7 +85,7 @@ app.post("/applyGroupLoan", async(req, res, next) => {
     }
   });
   // disburse loan
-  app.post("/disburseLoan", async(req, res, next) => {
+  app.post("/disburseLoan", verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         id: Joi.required(),
@@ -147,7 +148,7 @@ app.post("/applyGroupLoan", async(req, res, next) => {
       });
     }
   });
-  app.get("/entry/:filter", async(req, res, next) => {
+  app.get("/entry/:filter", verifyToken, async(req, res, next) => {
     try{
       console.log(typeof parseInt(req.params.filter));
       let filter = "";

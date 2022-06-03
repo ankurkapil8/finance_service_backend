@@ -6,9 +6,9 @@ var MemberModel = require('../models/MemberModel');
 const { async } = require("q");
 var GroupLoanModel = require('../models/GroupLoanModel');
 const multer = require('multer')
+var verifyToken = require('../util/auth_middleware');
 
-
-app.get("/entry/:member_id", async (req, res, next) => {
+app.get("/entry/:member_id", verifyToken, async (req, res, next) => {
   try {
     let filter = "1=1";
     console.log(req.params)
@@ -26,7 +26,7 @@ app.get("/entry/:member_id", async (req, res, next) => {
     });
   }
 })
-app.post("/entry", async (req, res, next) => {
+app.post("/entry", verifyToken, async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
       enrollment_date: Joi.required(),
@@ -63,7 +63,7 @@ app.post("/entry", async (req, res, next) => {
   }
 
 });
-app.delete("/entry/:member_id", async (req, res, next) => {
+app.delete("/entry/:member_id", verifyToken, async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
       member_id: Joi.required(),
@@ -87,7 +87,7 @@ app.delete("/entry/:member_id", async (req, res, next) => {
   }
 })
 
-app.put("/entry/:member_id", async (req, res, next) => {
+app.put("/entry/:member_id", verifyToken, async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
       member_id: Joi.required(),
@@ -126,7 +126,7 @@ app.put("/entry/:member_id", async (req, res, next) => {
 
 });
 
-app.get("/loanByMember/:member_id", async (req, res, next) => {
+app.get("/loanByMember/:member_id", verifyToken, async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
       member_id: Joi.required(),

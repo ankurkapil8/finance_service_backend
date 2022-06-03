@@ -4,12 +4,13 @@ const router = express.Router();
 const db = require("../config");
 const UserModel = require("../models/UserModel");
 const InqueryModel = require("../models/InqueryModel");
-var sendObj = require("../util/sendMail")
+// var sendObj = require("../util/sendMail")
 const { encrypt} = require('../util/crypto'); 
 const Joi = require('@hapi/joi');
 var jwt = require('jsonwebtoken');
 const { async } = require("q");
-app.set('superSecret', "kanbafood");
+//app.set('superSecret', "kanbafood");
+require('dotenv').config()
 router.post("/registration", async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
@@ -69,11 +70,12 @@ router.post("/login", async (req, res, next) => {
       });
     }
     try{
+      console.log(process.env.JWT_SECRET);
       let response = [];
       let token = "";
        response = await UserModel.findOne(req.body);
       if(response.length>0){
-         token = jwt.sign({username:response.username,password:response.password,role:response.role}, app.get('superSecret'), { expiresIn: '2h' }); //set jwt token
+         token = jwt.sign({username:response.username,password:response.password,role:response.role}, process.env.JWT_SECRET, { expiresIn: '2h' }); //set jwt token
       }
           return res.status(200).json({
             message: response.length>0?"User login successfully!":"Username or password wrong!",
@@ -94,33 +96,33 @@ router.post("/login", async (req, res, next) => {
     });
   }
 })
-router.post("/submitInquery", (req, res, next) => {
-  try {
-    var inqueryModel = new InqueryModel(req.body);
-    inqueryModel.save(function (err) {
-      if (err) {
-        return res.status(500).json({
-          message: err
-        });
-      } else {
-        sendObj.sendMail(req.body, "inquery").then(res => {
-          console.log(res);
-        }).catch(err => {
-          console.log(err);
-        })
+// router.post("/submitInquery", (req, res, next) => {
+//   try {
+//     var inqueryModel = new InqueryModel(req.body);
+//     inqueryModel.save(function (err) {
+//       if (err) {
+//         return res.status(500).json({
+//           message: err
+//         });
+//       } else {
+//         sendObj.sendMail(req.body, "inquery").then(res => {
+//           console.log(res);
+//         }).catch(err => {
+//           console.log(err);
+//         })
 
-        return res.status(200).json({
-          message: "Data submited successfully"
-        });
-      }
-    })
+//         return res.status(200).json({
+//           message: "Data submited successfully"
+//         });
+//       }
+//     })
 
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message
-    });
-  }
-})
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: error.message
+//     });
+//   }
+// })
 router.get("/userList", async(req, res, next) => {
   try {
 

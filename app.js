@@ -5,11 +5,7 @@ var path = require('path');
 var http = require("http");
 var cors = require('cors')
 require("./config");
-// var sendObj = require("./util/sendMail")
-// const financeRoutes = require("./controllers/finance");
  const usersRoutes = require("./controllers/users");
-// const categoryRoutes =require("./controllers/category");
-// const orderRoutes = require("./controllers/orders");
  const memberGroupRoutes = require("./controllers/memberGroup")
  const processingFeeRoutes = require("./controllers/processingFee")
  const expenseRoutes = require("./controllers/expense")
@@ -23,12 +19,7 @@ require("./config");
  const rdapplicationRoutes = require("./controllers/rdApplications")
  const accountDepositedRoutes = require("./controllers/AccountDeposited")
  const applicationVersionRoutes = require("./controllers/applicationVersion")
- //const smsRoutes = require("./controllers/sms")
  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-// var PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//     console.log(`Server running on port ${PORT}`);
-// });
   app.use(function (req, res, next) {
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -47,12 +38,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/uploads', express.static('uploads'));
-//app.use("/api/finance",financeRoutes);
 app.use("/api/user",usersRoutes);
-//app.use("/api/",categoryRoutes);
-//app.use("/api/",productRoutes);
-//app.use("/api/orders",orderRoutes);
-//app.use("/api/payment",paymentRoutes);
 app.use("/api/memberGroups",memberGroupRoutes);
 app.use("/api/processingFee",processingFeeRoutes);
 app.use("/api/expense",expenseRoutes);
@@ -66,28 +52,6 @@ app.use("/api/rdScheme",rdschemeRoutes);
 app.use("/api/rdApplication",rdapplicationRoutes);
 app.use("/api/accountDeposited",accountDepositedRoutes);
 app.use("/api/applicationVersion",applicationVersionRoutes);
-//app.use("/api/sms",smsRoutes);
-
-  // app.use("/", (req, res, next) => {
-//   // sendObj.sendMail().then(res=>{
-//   //   console.log(res);
-//   // }).catch(err=>{
-//   //   console.log(err);
-
-//   // })
-//   // var newCat = new CategoryModel({ name: "cat1"});
-//   // newCat.save(function(err){
-//   //   console.log(err);
-//   // })
-//     return res.status(200).json("Welcome to auction website");
-// })
-// Send all other requests to the Angular app
-// app.get('/api/download', (req, res) => {
-//   //console.log(req.query);
-//       //return res.status(200).json(req.query);
-
-//   res.sendFile(path.join(__dirname, `Form16_pdfs/${req.query.fileName}`));
-// });
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
