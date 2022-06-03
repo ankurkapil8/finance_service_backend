@@ -5,7 +5,7 @@ const db = require("../config");
 const UserModel = require("../models/UserModel");
 const InqueryModel = require("../models/InqueryModel");
 // var sendObj = require("../util/sendMail")
-const { encrypt} = require('../util/crypto'); 
+const { encrypt,decrypt} = require('../util/crypto'); 
 const Joi = require('@hapi/joi');
 var jwt = require('jsonwebtoken');
 const { async } = require("q");
@@ -36,7 +36,7 @@ router.post("/registration", async (req, res, next) => {
       ...req.body
     }
     try {
-      let response = await UserModel.save(newUser);
+      let response = await UserModel.create(newUser);
       return res.status(200).json({
         message: response
       });
@@ -70,17 +70,22 @@ router.post("/login", async (req, res, next) => {
       });
     }
     try{
-      console.log(process.env.JWT_SECRET);
-      let response = [];
+      
+      let response = {};
       let token = "";
-       response = await UserModel.findOne(req.body);
-      if(response.length>0){
+       //response = await UserModel.findOne(req.body);
+       response = await UserModel.findOne({ where: { username: req.body.username}});
+       if(response!=null){
+            if(decrypt(response.password)!=req.body.password)
+              response = null;
+        }
+      if(response!=null){
          token = jwt.sign({username:response.username,password:response.password,role:response.role}, process.env.JWT_SECRET, { expiresIn: '2h' }); //set jwt token
       }
           return res.status(200).json({
-            message: response.length>0?"User login successfully!":"Username or password wrong!",
+            message: response!=null?"User login successfully!":"Username or password wrong!",
             jwtToken: token,
-            record: response
+            record: response!=null?response:{}
           });
 
     }catch (error) {

@@ -15,10 +15,11 @@
     "moment": "^2.29.1",
     "mongoose": "^5.10.11",
     "multer": "^1.4.4-lts.1",
-    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "nodemailer": "^6.4.14",
     "q": "^1.5.1",
     "razorpay": "^2.0.6",
+    "sequelize": "^6.20.1",
     "unirest": "^0.6.0"
   },
   "devDependencies": {},
