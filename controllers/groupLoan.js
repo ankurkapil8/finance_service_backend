@@ -109,7 +109,7 @@ app.post("/applyGroupLoan", async(req, res, next) => {
               response[0][0].Tenure,
               response[0][0].interest_rate,
               response[0][0].EMI_payout,
-              req.body.disburseDate,
+              new Date(req.body.disburseDate),
               response[0][0].week,
               response[0][0].day,
               );
