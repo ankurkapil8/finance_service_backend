@@ -88,9 +88,10 @@ app.post("/calculateEMI", verifyToken, async(req, res, next) => {
   if(EMI_payout == "village"){
     firstEmiDate = calculateFirstEmiVillage(week, day, loanDate);
   }
-  console.log("firstEmiDate ",firstEmiDate);
+  //console.log("tenure ",tenure);
   let w = 0
   for(let i=1;i<=tenure;i++){
+    //console.log(i);
     if(EMI_payout=="monthly"){
       nextEMIDate = new Date(loanDate.setMonth(loanDate.getMonth()+1))
     }else if(EMI_payout=="weekly"){

@@ -105,39 +105,41 @@ app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
         let EMIsDates = [];
         let formatedEmis = [];
         let disburseDate = moment(req.body.disburseDate).format("yyyy-MM-DD")
-        console.log(disburseDate);
-        let res = connection.query('CALL disburseLoan(:id, :actionType, :disburseDate)', 
+        //console.log(disburseDate);
+        let response = await connection.query('CALL disburseLoan(:id, :actionType, :disburseDate)', 
         {replacements: { id: req.body.id, actionType: req.body.actionType, disburseDate: disburseDate, }})
   
         //let response = await GroupLoanModel.disburseLoan(req.body.id, req.body.actionType, disburseDate);
-        //console.log(response);
+        //console.log(response[0]);
         if(req.body.actionType == 1){
           //console.log("in action");
             EMIsDates = EMIs.calculateEMIFlat(
-              response[0][0].loan_amount,
-              response[0][0].Tenure,
-              response[0][0].interest_rate,
-              response[0][0].EMI_payout,
+              response[0].loan_amount,
+              response[0].Tenure,
+              response[0].interest_rate,
+              response[0].EMI_payout,
               new Date(req.body.disburseDate),
-              response[0][0].week,
-              response[0][0].day,
+              0,
+              ""
               );
+              //console.log(EMIsDates);
             EMIsDates.map(emi=>{
               let loanDate = emi.date;
               loanDate = loanDate.split("-");
               loanDate = new Date(`${loanDate[2]}-${loanDate[1]}-${loanDate[0]}`);
-              formatedEmis.push([
-                response[0][0].loan_account_no,
-                emi.int_amount,
-                emi.principal,
-                emi.EMI,
-                emi.outstanding,
-                loanDate,
-                emi.remain_EMI,
-              ]);
+              formatedEmis.push({
+                "loan_account_no":response[0].loan_account_no,
+                "int_amount":emi.int_amount,
+                "principal":emi.principal,
+                "EMI_amount":emi.EMI,
+                "outstanding":emi.outstanding,
+                "EMI_date":loanDate,
+                "remain_EMI":emi.remain_EMI,
+                "isPaid":0
+            });
             });
             console.log(formatedEmis);
-            let emiResponse = await EmiModel.save(formatedEmis);
+            let emiResponse = await EmiModel.bulkCreate(formatedEmis);
   
         }
         return res.status(200).json({
