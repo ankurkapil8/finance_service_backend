@@ -10,7 +10,7 @@ class GROUPLOAN extends Model {}
 GROUPLOAN.init({
   id: { type: DataTypes.INTEGER,primaryKey: true,autoIncrement:true },
   loan_account_no: { type: DataTypes.STRING(45), allowNull: true},
-  scheme_id: { type: DataTypes.STRING(10), allowNull: true},
+  scheme_id: { type: DataTypes.INTEGER, allowNull: true},
   member_id:{ type: DataTypes.INTEGER},
   village_id:{ type: DataTypes.INTEGER, allowNull: true },
   user_id:{ type: DataTypes.INTEGER, allowNull: true },
@@ -39,7 +39,7 @@ GROUPLOAN.init({
   
 });
 GROUPLOAN.belongsTo(Member,{foreignKey:{name:'member_id',allowNull: false}})
-GROUPLOAN.belongsTo(Scheme,{foreignKey:'scheme_id',allowNull: false})
+GROUPLOAN.belongsTo(Scheme,{foreignKey:{name:'scheme_id',allowNull: false}})
 async function createModel(){
   try {
     await GROUPLOAN.sync();
