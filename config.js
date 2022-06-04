@@ -34,3 +34,8 @@ async function makeConnection(){
 makeConnection();
 module.exports = connection;
 require('./models/UserModel');
+require('./models/MemberGroups');
+require('./models/MemberModel');
+require('./models/SchemeModel');
+require('./models/GroupLoanModel');
+require('./models/EmiModel');

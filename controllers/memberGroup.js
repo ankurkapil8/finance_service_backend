@@ -23,7 +23,7 @@ app.post("/entry", verifyToken, async(req, res, next) => {
         ...req.body
       }
       try{
-        let response = await MemberGroupModel.save(formatedData);
+        let response = await MemberGroupModel.create(formatedData);
         return res.status(200).json({
             message: response
           });
@@ -46,7 +46,7 @@ app.post("/entry", verifyToken, async(req, res, next) => {
 
   app.get("/entry", verifyToken, async(req, res, next) => {
     try{
-        let response = await MemberGroupModel.getAll();
+        let response = await MemberGroupModel.findAll();
         return res.status(200).json({
             message: response
           });
@@ -70,7 +70,7 @@ app.post("/entry", verifyToken, async(req, res, next) => {
             });        
           }
     
-        let response = await MemberGroupModel.deleteGroup(req.params.group_code);
+        let response = await MemberGroupModel.destroy({where:{group_code:req.params.group_code} });
         return res.status(200).json({
             message: response
           });
@@ -94,7 +94,7 @@ app.post("/entry", verifyToken, async(req, res, next) => {
         });        
       }
 
-        let response = await MemberGroupModel.getMemberListByGroup(req.params.group_code);
+        let response = await MemberGroupModel.findOne({where:{group_code:req.params.group_code} });
         return res.status(200).json({
             message: response
           });

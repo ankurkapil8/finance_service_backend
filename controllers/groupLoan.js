@@ -9,6 +9,7 @@ var EMIs = require("./EMIs");
 const { date } = require("@hapi/joi");
 var moment = require('moment');
 var verifyToken = require('../util/auth_middleware');
+const connection = require("../config");
 // add loan application
 app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
     try {
@@ -36,7 +37,7 @@ app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
         ...req.body
       }
       try{
-        let response = await GroupLoanModel.save(formatedData);
+        let response = await GroupLoanModel.create(formatedData);
         return res.status(200).json({
             message: response
           });
@@ -69,9 +70,10 @@ app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
         });        
       }
       try{
-        let response = await GroupLoanModel.approveLoan(req.body.id, req.body.actionType);
+        await GroupLoanModel.update({is_approved:req.body.actionType},{where:{id:req.body.id}})
+        //let response = await GroupLoanModel.approveLoan(req.body.id, req.body.actionType);
         return res.status(200).json({
-            message: response
+            message: req.body.actionType==1?"Loan has been approved. Loan will show for disburse!":"Loan has been rejected!"
           });
       }catch (error) {
       return res.status(500).json({
@@ -103,7 +105,10 @@ app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
         let formatedEmis = [];
         let disburseDate = moment(req.body.disburseDate).format("yyyy-MM-DD")
         console.log(disburseDate);
-        let response = await GroupLoanModel.disburseLoan(req.body.id, req.body.actionType, disburseDate);
+        let res = connection.query('CALL disburseLoan(:id, :actionType, :disburseDate)', 
+        {replacements: { id: req.body.id, actionType: req.body.actionType, disburseDate: disburseDate, }})
+  
+        //let response = await GroupLoanModel.disburseLoan(req.body.id, req.body.actionType, disburseDate);
         //console.log(response);
         if(req.body.actionType == 1){
           //console.log("in action");
@@ -151,22 +156,24 @@ app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
   app.get("/entry/:filter", verifyToken, async(req, res, next) => {
     try{
       console.log(typeof parseInt(req.params.filter));
-      let filter = "";
+      let filter = {};
         switch (req.params.filter) {
           case "pendingApproval":
-            filter = "is_approved=0";
+            filter ={is_approved:0};
             break;
             case "pendingDisburse":
-              filter = "is_approved=1 AND is_disbursed=0";
+              filter ={is_approved:1,is_disbursed:0};
+              //filter = "is_approved=1 AND is_disbursed=0";
               break;
               case "all":
-                filter = "1=1"
+                filter = {}
                 break;
             default:
-              filter = `loan.id=${req.params.filter}`;
+              filter = {id:req.params.filter}
+              //`loan.id=${req.params.filter}`;
             break;
         }
-        let response = await GroupLoanModel.getAll(filter);
+        let response = await GroupLoanModel.findAll({where: filter,include: [Member]});
         return res.status(200).json({
             message: response
           });

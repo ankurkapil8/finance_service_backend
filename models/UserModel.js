@@ -1,6 +1,6 @@
 const { async } = require("q");
 const connection = require("../config");
-const TableName = "user";
+//const TableName = "user";
 const { decrypt} = require('../util/crypto'); 
 const { Model, DataTypes, Deferrable } = require("sequelize");
 

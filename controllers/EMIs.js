@@ -6,6 +6,7 @@ var EmiModel = require('../models/EmiModel');
 const { async } = require("q");
 var moment = require('moment');
 var verifyToken = require('../util/auth_middleware');
+const connection = require("../config");
 app.post("/calculateEMI", verifyToken, async(req, res, next) => {
     try {
     const joiSchema = Joi.object({
@@ -120,8 +121,9 @@ app.get("/dueEMIs/:dueDate", verifyToken,async(req, res, next) => {
   try {
 
       let dueDate = req.params.dueDate?req.params.dueDate:new Date();
-      let filter = `EMI_date = "${dueDate}" AND isPaid=0`;
-      let response = await EmiModel.getAll(filter);
+      //let filter = `EMI_date = "${dueDate}" AND isPaid=0`;
+      let filter = {EMI_date:dueDate,isPaid:0}
+      let response = await EmiModel.findAll({where:filter});
       return res.status(200).json({
           message: response
         });
@@ -144,7 +146,7 @@ app.put("/entry", verifyToken, async(req, res, next) => {
       });        
     }
     try{
-      let response = await EmiModel.update(req.body.id);
+      let response = await EmiModel.update({isPaid:1},{where:{id:req.body.id}});
       return res.status(200).json({
           message: response
         });
@@ -174,8 +176,9 @@ app.get("/entry/:loanAccountNo", verifyToken, async(req, res, next) => {
       });        
     }
 
-      let filter = `loan_account_no = "${req.params.loanAccountNo}" AND isPaid=1`;
-      let response = await EmiModel.getEmiData(filter);
+      //let filter = `loan_account_no = "${req.params.loanAccountNo}" AND isPaid=1`;
+      let filter = {loan_account_no:req.params.loanAccountNo,isPaid:1}
+      let response = await EmiModel.findAll({where:filter});
       return res.status(200).json({
           message: response
         });
@@ -189,10 +192,11 @@ app.get("/entry/:loanAccountNo", verifyToken, async(req, res, next) => {
 app.get("/allEmis/:dueDate", verifyToken, async(req, res, next) => {
   try {
       let dueDate = req.params.dueDate?req.params.dueDate:new Date();
-      let filter = `EMI_date = "${dueDate}"`;
+      //let filter = `EMI_date = "${dueDate}"`;
+      let filter = {EMI_date:dueDate}
       let paidCount = 0;
       let notPaidCount = 0;
-      let response = await EmiModel.getAll(filter);
+      let response = await EmiModel.getAll({where:filter});
       response.map((res)=>{
         if(res.isPaid==1){
           paidCount = paidCount+1;
@@ -216,7 +220,9 @@ app.get("/paidEmi/:month/:year", verifyToken, async(req, res, next) => {
   try {
       let month = req.params.month;
       let year = req.params.year;
-      let response = await EmiModel.getPaidEmiByMonthYear(month, year);
+      //let response = await EmiModel.getPaidEmiByMonthYear(month, year);
+      let response = await EmiModel.findAll({attributes: [[ sequelize.fn('MONTH', sequelize.col('EMI_date')), month],[ sequelize.fn('YEAR', sequelize.col('EMI_date')), year]] })
+
       const totalInt = response.reduce(
         (previousValue, currentValue) => previousValue + currentValue.int_amount,0
       )

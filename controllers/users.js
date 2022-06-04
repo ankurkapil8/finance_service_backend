@@ -3,7 +3,6 @@ var app = express();
 const router = express.Router();
 const db = require("../config");
 const UserModel = require("../models/UserModel");
-const InqueryModel = require("../models/InqueryModel");
 // var sendObj = require("../util/sendMail")
 const { encrypt,decrypt} = require('../util/crypto'); 
 const Joi = require('@hapi/joi');
@@ -131,7 +130,7 @@ router.post("/login", async (req, res, next) => {
 router.get("/userList", async(req, res, next) => {
   try {
 
-    let response = await UserModel.getAll();
+    let response = await UserModel.findAll();
     return res.status(200).json({
       message: response,
     });    
@@ -153,7 +152,12 @@ router.delete("/deleteUser/:id", async(req, res, next) => {
           });        
         }
   
-      let response = await UserModel.deleteUser(req.params.id);
+      //let response = await UserModel.deleteUser(req.params.id);
+      let response = await User.destroy({
+        where: {
+          id: req.params.id
+        }
+      });
       return res.status(200).json({
           message: response
         });
