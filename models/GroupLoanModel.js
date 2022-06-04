@@ -39,7 +39,7 @@ GROUPLOAN.init({
   
 });
 GROUPLOAN.belongsTo(Member,{foreignKey:{name:'member_id',allowNull: false}})
-GROUPLOAN.hasOne(Scheme,{foreignKey:'scheme_id'})
+GROUPLOAN.belongsTo(Scheme,{foreignKey:'scheme_id',allowNull: false})
 async function createModel(){
   try {
     await GROUPLOAN.sync();
