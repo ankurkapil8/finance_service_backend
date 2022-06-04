@@ -180,8 +180,8 @@ router.put("/changePassword", async(req, res, next) => {
     let hashpassword = encrypt(req.body.password);
     console.log(hashpassword);
     req.body["password"] = hashpassword;
-
-    let response = await UserModel.changePassword(req.body.password,req.body.id);
+    let response = await UserModel.update({password:req.body.password},{where:{id:req.body.id}});
+    //let response = await UserModel.changePassword(req.body.password,req.body.id);
     return res.status(200).json({
       message: response
     });
@@ -205,7 +205,8 @@ router.put("/changeRole", async(req, res, next) => {
         message: validationResult.error.details
       });
     }
-    let response = await UserModel.changeRole(req.body.role,req.body.id);
+    //let response = await UserModel.changeRole(req.body.role,req.body.id);
+    let response = await UserModel.update({role:req.body.role},{where:{id:req.body.id}});
     return res.status(200).json({
       message: response
     });
