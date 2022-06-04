@@ -107,7 +107,7 @@ app.put("/entry/:member_id", verifyToken, async (req, res, next) => {
       //   updateField = updateField+` "${key}"="${req.body[key]}",`;
       // }
       // console.log(updateField);       {password:req.body.password},{where:{member_id:req.body.member_id}} 
-      let response = await MemberModel.update(req.body, {where:{member_id:req.body.member_id}});
+      let response = await MemberModel.update(req.body, {where:{member_id:req.params.member_id}});
       return res.status(200).json({
         message: response
       });
