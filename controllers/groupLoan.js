@@ -4,6 +4,7 @@ const appE = express();
 const Joi = require('@hapi/joi');
 var GroupLoanModel = require('../models/GroupLoanModel');
 var EmiModel = require('../models/EmiModel');
+var MemberModel = require('../models/MemberModel');
 const { async } = require("q");
 var EMIs = require("./EMIs");
 const { date } = require("@hapi/joi");
@@ -173,7 +174,7 @@ app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
               //`loan.id=${req.params.filter}`;
             break;
         }
-        let response = await GroupLoanModel.findAll({where: filter,include: [Member]});
+        let response = await GroupLoanModel.findAll({where: filter,include: [MemberModel]});
         return res.status(200).json({
             message: response
           });
