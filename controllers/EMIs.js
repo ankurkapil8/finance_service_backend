@@ -8,6 +8,7 @@ const { async } = require("q");
 var moment = require('moment');
 var verifyToken = require('../util/auth_middleware');
 const connection = require("../config");
+const { Op } = require("sequelize");
 app.post("/calculateEMI", verifyToken, async(req, res, next) => {
     try {
     const joiSchema = Joi.object({
@@ -125,7 +126,10 @@ app.get("/dueEMIs/:dueDate", verifyToken,async(req, res, next) => {
       let dueDate = req.params.dueDate?req.params.dueDate:new Date();
       //let filter = `EMI_date = "${dueDate}" AND isPaid=0`;
       let filter = {EMI_date:dueDate,isPaid:0}
-      let response = await EmiModel.findAll({where:filter});
+      let response = await EmiModel.findAll({where:filter,include: [{
+        model: GroupLoanModel,
+        on: { '$emi.loan_account_no$' : { [Op.col]: 'group_loan.loan_account_no'}}
+    }]});
       return res.status(200).json({
           message: response
         });
@@ -198,7 +202,10 @@ app.get("/allEmis/:dueDate", verifyToken, async(req, res, next) => {
       let filter = {EMI_date:dueDate}
       let paidCount = 0;
       let notPaidCount = 0;
-      let response = await EmiModel.getAll({where:filter});
+      let response = await EmiModel.findAll({where:filter,include: [{
+        model: GroupLoanModel,
+        on: { '$emi.loan_account_no$' : { [Op.col]: 'group_loan.loan_account_no'}}
+    }]});
       response.map((res)=>{
         if(res.isPaid==1){
           paidCount = paidCount+1;
@@ -225,7 +232,10 @@ app.get("/paidEmi/:month/:year", verifyToken, async(req, res, next) => {
       //let response = await EmiModel.getPaidEmiByMonthYear(month, year);
       let response = await EmiModel.findAll({
         where: [connection.where(connection.fn("MONTH", connection.col("EMI_date")), month),connection.where(connection.fn("YEAR", connection.col("EMI_date")), year)],
-        include: [GroupLoanModel]
+        include: [{
+          model: GroupLoanModel,
+          on: { '$emi.loan_account_no$' : { [Op.col]: 'group_loan.loan_account_no'}}
+      }]
        
      })
 

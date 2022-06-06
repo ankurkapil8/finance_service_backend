@@ -24,7 +24,7 @@ Emi.init({
   modelName: 'emi',
   
 });
-Emi.belongsTo(GROUPLOAN,{foreignKey:'loan_account_no'})
+Emi.belongsTo(GROUPLOAN,{foreignKey:'loan_account_no', constraints: false })
 async function createModel(){
   try {
     await Emi.sync();
