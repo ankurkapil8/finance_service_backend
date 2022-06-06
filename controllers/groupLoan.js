@@ -115,7 +115,7 @@ app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
           //console.log("in action");
             EMIsDates = EMIs.calculateEMIFlat(
               response[0].loan_amount,
-              response[0].Tenure,
+              response[0].tenure,
               response[0].interest_rate,
               response[0].EMI_payout,
               new Date(req.body.disburseDate),

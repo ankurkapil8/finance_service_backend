@@ -18,7 +18,7 @@ GROUPLOAN.init({
   EMI_payout:{ type: DataTypes.STRING(45), allowNull: true },
   EMI_type:{ type: DataTypes.STRING(45), allowNull: true },
   address:{ type: DataTypes.STRING(100) },
-  Tenure:{ type: DataTypes.INTEGER, allowNull: true },
+  tenure:{ type: DataTypes.INTEGER, allowNull: true },
   interest_rate:{ type: DataTypes.INTEGER, allowNull: true },
   loan_amount:{ type: DataTypes.DOUBLE, allowNull: true },
   EMI_amount:{ type: DataTypes.DOUBLE, allowNull: true },
