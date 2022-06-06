@@ -3,6 +3,7 @@ const app = express.Router();
 const appE = express();
 const Joi = require('@hapi/joi');
 var EmiModel = require('../models/EmiModel');
+var GroupLoanModel = require('../models/GroupLoanModel');
 const { async } = require("q");
 var moment = require('moment');
 var verifyToken = require('../util/auth_middleware');
@@ -222,7 +223,11 @@ app.get("/paidEmi/:month/:year", verifyToken, async(req, res, next) => {
       let month = req.params.month;
       let year = req.params.year;
       //let response = await EmiModel.getPaidEmiByMonthYear(month, year);
-      let response = await EmiModel.findAll({attributes: [[ sequelize.fn('MONTH', sequelize.col('EMI_date')), month],[ sequelize.fn('YEAR', sequelize.col('EMI_date')), year]] })
+      let response = await EmiModel.findAll({
+        where: [connection.where(connection.fn("MONTH", connection.col("EMI_date")), month),connection.where(connection.fn("YEAR", connection.col("EMI_date")), year)],
+        include: [GroupLoanModel]
+       
+     })
 
       const totalInt = response.reduce(
         (previousValue, currentValue) => previousValue + currentValue.int_amount,0
