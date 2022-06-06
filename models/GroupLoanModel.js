@@ -38,8 +38,8 @@ GROUPLOAN.init({
   modelName: 'group_loan',
   
 });
-GROUPLOAN.belongsTo(Member,{foreignKey:{name:'member_id',allowNull: false}})
-GROUPLOAN.belongsTo(Scheme,{foreignKey:{name:'scheme_id',allowNull: false}})
+GROUPLOAN.belongsTo(Member,{foreignKey:{name:'member_id',allowNull: false},constraints:false})
+GROUPLOAN.belongsTo(Scheme,{foreignKey:{name:'scheme_id',allowNull: false},constraints:false})
 async function createModel(){
   try {
     await GROUPLOAN.sync();
