@@ -4,12 +4,15 @@ const appE = express();
 const Joi = require('@hapi/joi');
 var GroupLoanModel = require('../models/GroupLoanModel');
 var EmiModel = require('../models/EmiModel');
+var MemberModel = require('../models/MemberModel');
 const { async } = require("q");
 var EMIs = require("./EMIs");
 const { date } = require("@hapi/joi");
 var moment = require('moment');
+var verifyToken = require('../util/auth_middleware');
+const connection = require("../config");
 // add loan application
-app.post("/applyGroupLoan", async(req, res, next) => {
+app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         application_date: Joi.required(),
@@ -35,7 +38,7 @@ app.post("/applyGroupLoan", async(req, res, next) => {
         ...req.body
       }
       try{
-        let response = await GroupLoanModel.save(formatedData);
+        let response = await GroupLoanModel.create(formatedData);
         return res.status(200).json({
             message: response
           });
@@ -55,7 +58,7 @@ app.post("/applyGroupLoan", async(req, res, next) => {
     }
   
   });
-  app.post("/approveLoan", async(req, res, next) => {
+  app.post("/approveLoan", verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         id: Joi.required(),
@@ -68,9 +71,10 @@ app.post("/applyGroupLoan", async(req, res, next) => {
         });        
       }
       try{
-        let response = await GroupLoanModel.approveLoan(req.body.id, req.body.actionType);
+        await GroupLoanModel.update({is_approved:req.body.actionType},{where:{id:req.body.id}})
+        //let response = await GroupLoanModel.approveLoan(req.body.id, req.body.actionType);
         return res.status(200).json({
-            message: response
+            message: req.body.actionType==1?"Loan has been approved. Loan will show for disburse!":"Loan has been rejected!"
           });
       }catch (error) {
       return res.status(500).json({
@@ -84,7 +88,7 @@ app.post("/applyGroupLoan", async(req, res, next) => {
     }
   });
   // disburse loan
-  app.post("/disburseLoan", async(req, res, next) => {
+  app.post("/disburseLoan", verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         id: Joi.required(),
@@ -101,36 +105,41 @@ app.post("/applyGroupLoan", async(req, res, next) => {
         let EMIsDates = [];
         let formatedEmis = [];
         let disburseDate = moment(req.body.disburseDate).format("yyyy-MM-DD")
-        console.log(disburseDate);
-        let response = await GroupLoanModel.disburseLoan(req.body.id, req.body.actionType, disburseDate);
-        //console.log(response);
+        //console.log(disburseDate);
+        let response = await connection.query('CALL disburseLoan(:id, :actionType, :disburseDate)', 
+        {replacements: { id: req.body.id, actionType: req.body.actionType, disburseDate: disburseDate, }})
+  
+        //let response = await GroupLoanModel.disburseLoan(req.body.id, req.body.actionType, disburseDate);
+        //console.log(response[0]);
         if(req.body.actionType == 1){
           //console.log("in action");
             EMIsDates = EMIs.calculateEMIFlat(
-              response[0][0].loan_amount,
-              response[0][0].Tenure,
-              response[0][0].interest_rate,
-              response[0][0].EMI_payout,
+              response[0].loan_amount,
+              response[0].tenure,
+              response[0].interest_rate,
+              response[0].EMI_payout,
               new Date(req.body.disburseDate),
-              response[0][0].week,
-              response[0][0].day,
+              0,
+              ""
               );
+              //console.log(EMIsDates);
             EMIsDates.map(emi=>{
               let loanDate = emi.date;
               loanDate = loanDate.split("-");
               loanDate = new Date(`${loanDate[2]}-${loanDate[1]}-${loanDate[0]}`);
-              formatedEmis.push([
-                response[0][0].loan_account_no,
-                emi.int_amount,
-                emi.principal,
-                emi.EMI,
-                emi.outstanding,
-                loanDate,
-                emi.remain_EMI,
-              ]);
+              formatedEmis.push({
+                "loan_account_no":response[0].loan_account_no,
+                "int_amount":emi.int_amount,
+                "principal":emi.principal,
+                "EMI_amount":emi.EMI,
+                "outstanding":emi.outstanding,
+                "EMI_date":loanDate,
+                "remain_EMI":emi.remain_EMI,
+                "isPaid":0
+            });
             });
             console.log(formatedEmis);
-            let emiResponse = await EmiModel.save(formatedEmis);
+            let emiResponse = await EmiModel.bulkCreate(formatedEmis);
   
         }
         return res.status(200).json({
@@ -147,25 +156,27 @@ app.post("/applyGroupLoan", async(req, res, next) => {
       });
     }
   });
-  app.get("/entry/:filter", async(req, res, next) => {
+  app.get("/entry/:filter", verifyToken, async(req, res, next) => {
     try{
       console.log(typeof parseInt(req.params.filter));
-      let filter = "";
+      let filter = {};
         switch (req.params.filter) {
           case "pendingApproval":
-            filter = "is_approved=0";
+            filter ={is_approved:0};
             break;
             case "pendingDisburse":
-              filter = "is_approved=1 AND is_disbursed=0";
+              filter ={is_approved:1,is_disbursed:0};
+              //filter = "is_approved=1 AND is_disbursed=0";
               break;
               case "all":
-                filter = "1=1"
+                filter = {}
                 break;
             default:
-              filter = `loan.id=${req.params.filter}`;
+              filter = {id:req.params.filter}
+              //`loan.id=${req.params.filter}`;
             break;
         }
-        let response = await GroupLoanModel.getAll(filter);
+        let response = await GroupLoanModel.findAll({where: filter,include: [MemberModel]});
         return res.status(200).json({
             message: response
           });

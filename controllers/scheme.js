@@ -28,7 +28,7 @@ app.post("/entry", async(req, res, next) => {
         ...req.body
       }
       try{
-        let response = await SchemeModel.save(formatedData);
+        let response = await SchemeModel.create(formatedData);
         return res.status(200).json({
             message: response
           });
@@ -47,7 +47,7 @@ app.post("/entry", async(req, res, next) => {
 
   app.get("/entry", async(req, res, next) => {
     try{
-        let response = await SchemeModel.getAll();
+        let response = await SchemeModel.findAll();
         return res.status(200).json({
             message: response
           });
@@ -69,7 +69,7 @@ app.post("/entry", async(req, res, next) => {
               message: validationResult.error.details
             });        
           }
-        let response = await SchemeModel.deleteScheme(req.params.id);
+        let response = await SchemeModel.destroy({where:{id:req.params.id}});
         return res.status(200).json({
             message: response
           });

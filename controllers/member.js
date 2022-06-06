@@ -6,16 +6,18 @@ var MemberModel = require('../models/MemberModel');
 const { async } = require("q");
 var GroupLoanModel = require('../models/GroupLoanModel');
 const multer = require('multer')
+var verifyToken = require('../util/auth_middleware');
+const Member = require("../models/MemberModel");
 
-
-app.get("/entry/:member_id", async (req, res, next) => {
+app.get("/entry/:member_id", verifyToken, async (req, res, next) => {
   try {
-    let filter = "1=1";
+    let filter = {};
     console.log(req.params)
     if (req.params.member_id != "all") {
-      filter = `member_id= ${req.params.member_id}`
+      //filter = `member_id= ${req.params.member_id}`
+      filter = {member_id:req.params.member_id}
     }
-    let response = await MemberModel.getAll(filter);
+    let response = await MemberModel.findAll(filter);
     return res.status(200).json({
       message: response
     });
@@ -26,7 +28,7 @@ app.get("/entry/:member_id", async (req, res, next) => {
     });
   }
 })
-app.post("/entry", async (req, res, next) => {
+app.post("/entry", verifyToken, async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
       enrollment_date: Joi.required(),
@@ -43,7 +45,7 @@ app.post("/entry", async (req, res, next) => {
       ...req.body
     }
     try {
-      let response = await MemberModel.save(formatedData);
+      let response = await MemberModel.create(formatedData);
       return res.status(200).json({
         message: response
       });
@@ -63,7 +65,7 @@ app.post("/entry", async (req, res, next) => {
   }
 
 });
-app.delete("/entry/:member_id", async (req, res, next) => {
+app.delete("/entry/:member_id", verifyToken, async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
       member_id: Joi.required(),
@@ -75,7 +77,7 @@ app.delete("/entry/:member_id", async (req, res, next) => {
       });
     }
 
-    let response = await MemberModel.deleteMember(req.params.member_id);
+    let response = await MemberModel.destroy({where:{member_id:req.params.member_id}});
     return res.status(200).json({
       message: response
     });
@@ -87,7 +89,7 @@ app.delete("/entry/:member_id", async (req, res, next) => {
   }
 })
 
-app.put("/entry/:member_id", async (req, res, next) => {
+app.put("/entry/:member_id", verifyToken, async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
       member_id: Joi.required(),
@@ -104,8 +106,8 @@ app.put("/entry/:member_id", async (req, res, next) => {
       // for (const key of Object.keys(req.body)) {
       //   updateField = updateField+` "${key}"="${req.body[key]}",`;
       // }
-      // console.log(updateField);        
-      let response = await MemberModel.update(req.body, req.params.member_id);
+      // console.log(updateField);       {password:req.body.password},{where:{member_id:req.body.member_id}} 
+      let response = await MemberModel.update(req.body, {where:{member_id:req.params.member_id}});
       return res.status(200).json({
         message: response
       });
@@ -126,7 +128,7 @@ app.put("/entry/:member_id", async (req, res, next) => {
 
 });
 
-app.get("/loanByMember/:member_id", async (req, res, next) => {
+app.get("/loanByMember/:member_id", verifyToken, async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
       member_id: Joi.required(),
@@ -137,8 +139,9 @@ app.get("/loanByMember/:member_id", async (req, res, next) => {
         message: validationResult.error.details
       });
     }
-    let filter = `loan.member_id=${req.params.member_id}`
-    let response = await GroupLoanModel.getAll(filter);
+    //let filter = `loan.member_id=${req.params.member_id}`
+    let filter ={member_id:req.params.member_id}
+    let response = await GroupLoanModel.findAll({where:filter,include:[Member]});
     return res.status(200).json({
       message: response
     });
