@@ -2,11 +2,12 @@ const { async } = require("q");
 const connection = require("../config");
 const { decrypt} = require('../util/crypto'); 
 const { Model, DataTypes, Deferrable } = require("sequelize");
+const GROUPLOAN = require("./GroupLoanModel");
 
 class AccountCloserModel extends Model {}
 AccountCloserModel.init({
   id: { type: DataTypes.INTEGER,primaryKey: true, autoIncrement:true },
-  group_loan_id: { type: DataTypes.INTEGER, allowNull: false},
+  loan_account_no: { type: DataTypes.STRING(45), allowNull: true},
   all_emi_paid: { type: DataTypes.TINYINT},
   paid_emi_count:{ type: DataTypes.INTEGER},
   settled_amount:{ type: DataTypes.DOUBLE, allowNull: false },
@@ -18,7 +19,7 @@ AccountCloserModel.init({
   modelName: 'account_closer',
   
 });
-AccountCloserModel.belongsTo(GROUPLOAN,{foreignKey:'group_loan_id', constraints: false })
+AccountCloserModel.belongsTo(GROUPLOAN,{foreignKey:'loan_account_no', constraints: false })
 async function createModel(){
   try {
     await AccountCloserModel.sync();
