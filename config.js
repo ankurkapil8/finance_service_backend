@@ -39,3 +39,4 @@ require('./models/MemberModel');
 require('./models/SchemeModel');
 require('./models/GroupLoanModel');
 require('./models/EmiModel');
+require('./models/AccountCloserModel');

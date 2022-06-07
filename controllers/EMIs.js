@@ -80,9 +80,9 @@ app.post("/calculateEMI", verifyToken, async(req, res, next) => {
    try{
       
   let result = [];
-  let totalIntAmount = Math.ceil(totalLoan*interest_rate/100);
-  let intPerTenure =  Math.ceil(totalIntAmount/tenure);
-  let principalPerTenure = Math.ceil(totalLoan/tenure);
+  let totalIntAmount = Math.ceil(totalLoan*interest_rate/100); //total interest
+  let intPerTenure =  Math.ceil(totalIntAmount/tenure); // per EMI interest
+  let principalPerTenure = Math.ceil(totalLoan/tenure); // per EMI principal
   let outstanding = totalLoan;
   //let currentEMI = 0;
   let totalAmount = totalLoan+totalIntAmount;

@@ -22,6 +22,8 @@ GROUPLOAN.init({
   interest_rate:{ type: DataTypes.INTEGER, allowNull: true },
   loan_amount:{ type: DataTypes.DOUBLE, allowNull: true },
   EMI_amount:{ type: DataTypes.DOUBLE, allowNull: true },
+  processing_fee:{type: DataTypes.DOUBLE},
+  insurance_premium:{type: DataTypes.DOUBLE},
   co_borrower_name:{ type: DataTypes.STRING(45), allowNull: true },
   co_borrower_aadhar_card:{ type: DataTypes.STRING(45), allowNull: true },
   co_borrower_pan_card:{ type: DataTypes.STRING(45), allowNull: true },

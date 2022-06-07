@@ -19,6 +19,8 @@ require("./config");
  const rdapplicationRoutes = require("./controllers/rdApplications")
  const accountDepositedRoutes = require("./controllers/AccountDeposited")
  const applicationVersionRoutes = require("./controllers/applicationVersion")
+ const closeAccountRoutes = require("./controllers/CloseAccount")
+
  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
   app.use(function (req, res, next) {
     // Website you wish to allow to connect
@@ -52,7 +54,7 @@ app.use("/api/rdScheme",rdschemeRoutes);
 app.use("/api/rdApplication",rdapplicationRoutes);
 app.use("/api/accountDeposited",accountDepositedRoutes);
 app.use("/api/applicationVersion",applicationVersionRoutes);
-
+app.use("/api/closeAccount",closeAccountRoutes);
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
