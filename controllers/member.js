@@ -17,7 +17,7 @@ app.get("/entry/:member_id", verifyToken, async (req, res, next) => {
       //filter = `member_id= ${req.params.member_id}`
       filter = {member_id:req.params.member_id}
     }
-    let response = await MemberModel.findAll(filter);
+    let response = await MemberModel.findOne({where:filter});
     return res.status(200).json({
       message: response
     });
