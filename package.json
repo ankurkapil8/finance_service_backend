@@ -20,7 +20,8 @@
     "q": "^1.5.1",
     "razorpay": "^2.0.6",
     "sequelize": "^6.20.1",
-    "unirest": "^0.6.0"
+    "unirest": "^0.6.0",
+    "winston": "^3.7.2"
   },
   "devDependencies": {},
   "scripts": {

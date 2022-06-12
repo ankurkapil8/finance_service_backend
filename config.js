@@ -2,6 +2,7 @@ var Q = require('q');
 var mysql = require('mysql2');
 const { Sequelize } = require('sequelize');
 const { async } = require('q');
+const logger = require('./util/logger');
 require('dotenv').config()
 // var connection = mysql.createConnection({
 //   host     : process.env.DATABASE_HOST,
@@ -27,8 +28,16 @@ async function makeConnection(){
   try {
     await connection.authenticate();
     console.log('Connection has been established successfully.');
+    logger.log({
+      level: 'info',
+      message: 'Connection has been established successfully.'
+    });
   } catch (error) {
     console.error('Unable to connect to the database:', error);
+    logger.log({
+      level: 'error',
+      message: error
+    });
   } 
 }
 makeConnection();
