@@ -103,7 +103,11 @@ app.post("/entry", async(req, res, next) => {
           });        
         }
       try{
-        let response = await ProcessingFeeModel.update({particular:req.body.particular},{where:{id:req.params.id}});
+        let response = await ProcessingFeeModel.update({
+          particular:req.body.particular,
+          amount:req.body.amount,
+          date_of_processing:date_of_processing
+        },{where:{id:req.params.id}});
         return res.status(200).json({
             message: response
           });
