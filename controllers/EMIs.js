@@ -239,7 +239,7 @@ app.get("/paidEmi/:month/:year", verifyToken, async(req, res, next) => {
       let year = req.params.year;
       //let response = await EmiModel.getPaidEmiByMonthYear(month, year);
       let response = await EmiModel.findAll({
-        where: [connection.where(connection.fn("MONTH", connection.col("EMI_date")), month),connection.where(connection.fn("YEAR", connection.col("EMI_date")), year)],
+        where: [connection.where(connection.col("isPaid"),1),connection.where(connection.fn("MONTH", connection.col("EMI_date")), month),connection.where(connection.fn("YEAR", connection.col("EMI_date")), year)],
         include: [{
           model: GroupLoanModel,
           on: { '$emi.loan_account_no$' : { [Op.col]: 'group_loan.loan_account_no'}}
