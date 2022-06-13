@@ -7,11 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('cds-app:server');
 var http = require('http');
-const logger = require('../util/logger');
-logger.log({
-  level: 'error',
-  message: logger
-});
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 process.env.cdsversion = '2.0.0'
 
