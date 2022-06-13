@@ -40,3 +40,4 @@ require('./models/SchemeModel');
 require('./models/GroupLoanModel');
 require('./models/EmiModel');
 require('./models/AccountCloserModel');
+require('./models/ProcessingFeeModel');

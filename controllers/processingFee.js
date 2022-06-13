@@ -4,6 +4,7 @@ const appE = express();
 const Joi = require('@hapi/joi');
 var ProcessingFeeModel = require('../models/ProcessingFeeModel');
 const { async } = require("q");
+// const { where } = require("sequelize/types");
 
 app.post("/entry", async(req, res, next) => {
     try {
@@ -19,14 +20,14 @@ app.post("/entry", async(req, res, next) => {
         });        
       }
       //const groupCode = `${req.body.group_name}_${new Date().getTime()}`;
-      const created_at = new Date().getTime();
-      var formatedData = {
-        // created_at:created_at,
-        status:0,
-        ...req.body
-      }
+      //const created_at = new Date().getTime();
+      // var formatedData = {
+      //   // created_at:created_at,
+      //   status:0,
+      //   ...req.body
+      // }
       try{
-        let response = await ProcessingFeeModel.save(formatedData);
+        let response = await ProcessingFeeModel.create(req.body);
         return res.status(200).json({
             message: response
           });
@@ -49,13 +50,13 @@ app.post("/entry", async(req, res, next) => {
 
   app.get("/entry/:id", async(req, res, next) => {
     try{
-      let filter = "1=1";
+      let filter = {};
       console.log(req.params)
       if(req.params.id!="all"){
-        filter = `id= ${req.params.id}`
+        filter = {id:req.params.id}
       }
 
-        let response = await ProcessingFeeModel.getAll(filter);
+        let response = await ProcessingFeeModel.findAll({where:filter});
         return res.status(200).json({
             message: response
           });
@@ -78,7 +79,7 @@ app.post("/entry", async(req, res, next) => {
             });        
           }
     
-        let response = await ProcessingFeeModel.deleteProcessingFee(req.params.id);
+        let response = await ProcessingFeeModel.destroy({where:{id:req.params.id}});
         return res.status(200).json({
             message: response
           });
@@ -102,7 +103,7 @@ app.post("/entry", async(req, res, next) => {
           });        
         }
       try{
-        let response = await ProcessingFeeModel.update(req.body, req.params.id);
+        let response = await ProcessingFeeModel.update({particular:req.body.particular},{where:{id:req.params.id}});
         return res.status(200).json({
             message: response
           });
