@@ -12,7 +12,7 @@ app.get("/calculateSattleAmount/:loan_account_no", verifyToken, async (req, res,
     const joiSchema = Joi.object({
       loan_account_no: Joi.required(),
     }).unknown(true);
-    const validationResult = joiSchema.validate(req.params.loan_account_no, { abortEarly: false });
+    const validationResult = joiSchema.validate(req.params, { abortEarly: false });
     if (validationResult.error) {
       return res.status(500).json({
         message: validationResult.error.details
