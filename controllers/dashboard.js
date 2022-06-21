@@ -71,7 +71,7 @@ app.get('/countActiveInactive',verifyToken, async(req, res, next) => {
         let inactiveAccount = 0;
         let loanaccounts = await GroupLoanModel.findAll({where:{is_disbursed:1}});
         for(let i=0;i<loanaccounts.length;i++){
-            if(loanaccounts.status==1){
+            if(loanaccounts[0].status==1){
                 inactiveAccount +=1;
             }else{
                 activeAccount+=1;
