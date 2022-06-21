@@ -7,12 +7,12 @@ var verifyToken = require('../util/auth_middleware');
 const Emi = require("../models/EmiModel");
 const GROUPLOAN = require("../models/GroupLoanModel");
 const emiController = require("./EMIs");
-app.get("/calculateSattleAmount", verifyToken, async (req, res, next) => {
+app.get("/calculateSattleAmount/:loan_account_no", verifyToken, async (req, res, next) => {
   try {
     const joiSchema = Joi.object({
       loan_account_no: Joi.required(),
     }).unknown(true);
-    const validationResult = joiSchema.validate(req.body, { abortEarly: false });
+    const validationResult = joiSchema.validate(req.params, { abortEarly: false });
     if (validationResult.error) {
       return res.status(500).json({
         message: validationResult.error.details
@@ -21,7 +21,7 @@ app.get("/calculateSattleAmount", verifyToken, async (req, res, next) => {
     let paidCount = 0;
     let unPaidCount = 0;
     try {
-      let emiRecords = await Emi.findAll({where:{loan_account_no:req.body.loan_account_no}});
+      let emiRecords = await Emi.findAll({where:{loan_account_no:req.params.loan_account_no}});
       for(obj of emiRecords){
         if(obj.isPaid==1){
           paidCount +=1;
