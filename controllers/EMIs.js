@@ -83,7 +83,7 @@ app.post("/calculateEMI", verifyToken, async(req, res, next) => {
   let totalIntAmount = Math.ceil(totalLoan*interest_rate/100); //total interest
   let intPerTenure =  Math.ceil(totalIntAmount/tenure); // per EMI interest
   let principalPerTenure = Math.ceil(totalLoan/tenure); // per EMI principal
-  let outstanding = totalLoan;
+  let outstanding = totalLoan+totalIntAmount;
   //let currentEMI = 0;
   let totalAmount = totalLoan+totalIntAmount;
   let EMIPerTenure = totalAmount/tenure;
@@ -91,7 +91,8 @@ app.post("/calculateEMI", verifyToken, async(req, res, next) => {
   if(EMI_payout == "village"){
     firstEmiDate = calculateFirstEmiVillage(week, day, loanDate);
   }
-  //console.log("tenure ",tenure);
+  console.log("totalIntAmount ",totalIntAmount);
+  console.log("totalLoan ",totalLoan);
   let w = 0
   for(let i=1;i<=tenure;i++){
     //console.log(i);
@@ -104,7 +105,7 @@ app.post("/calculateEMI", verifyToken, async(req, res, next) => {
     }else if(EMI_payout=="village"){
       nextEMIDate = moment(firstEmiDate).add(w, 'weeks');
     }
-    outstanding = outstanding-principalPerTenure;
+    outstanding = outstanding-EMIPerTenure;
      let emi = {
          "date":moment(nextEMIDate).format("DD-MM-YYYY"),
          "int_amount":intPerTenure,
