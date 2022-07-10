@@ -10,6 +10,7 @@ var verifyToken = require('../util/auth_middleware');
 const connection = require("../config");
 const { Op } = require("sequelize");
 const Member = require("../models/MemberModel");
+const MemberGroup = require("../models/MemberGroups");
 app.post("/calculateEMI", verifyToken, async(req, res, next) => {
     try {
     const joiSchema = Joi.object({
@@ -134,7 +135,11 @@ app.get("/dueEMIs/:dueDate", verifyToken,async(req, res, next) => {
         attributes:['loan_account_no'],
         include:[{
           model:Member,
-          attributes:['member_group_id','member_name','member_id']
+          attributes:['member_group_id','member_name','member_id','mobile_number'],
+          include:[{
+            model:MemberGroup,
+            attributes:['group_name']
+          }]
         }]
     }]});
       return res.status(200).json({
