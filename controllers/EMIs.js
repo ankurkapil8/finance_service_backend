@@ -213,6 +213,8 @@ app.get("/allEmis/:dueDate", verifyToken, async(req, res, next) => {
       //let filter = `EMI_date = "${dueDate}"`;
       let filter = {EMI_date:dueDate}
       let paidCount = 0;
+      let paidAmount = 0;
+      let unPaidAmount = 0;
       let notPaidCount = 0;
       let response = await EmiModel.findAll({where:filter,
         include: [{
@@ -223,14 +225,18 @@ app.get("/allEmis/:dueDate", verifyToken, async(req, res, next) => {
       response.map((res)=>{
         if(res.isPaid==1){
           paidCount = paidCount+1;
+          paidAmount += res.EMI_amount;
         }else{
           notPaidCount = notPaidCount+1;
+          unPaidAmount +=res.EMI_amount;
         }
       });
       return res.status(200).json({
           message: response,
           paidCount:paidCount,
-          notPaidCount:notPaidCount
+          notPaidCount:notPaidCount,
+          paidAmount:paidAmount,
+          unPaidAmount:unPaidAmount
         });
   }catch (error) {
         return res.status(500).json({
@@ -238,7 +244,6 @@ app.get("/allEmis/:dueDate", verifyToken, async(req, res, next) => {
         });
       }
 })
-
 app.get("/paidEmi/:month/:year", verifyToken, async(req, res, next) => {
   try {
       let month = req.params.month;
