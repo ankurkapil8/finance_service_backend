@@ -11,6 +11,8 @@ const { date } = require("@hapi/joi");
 var moment = require('moment');
 var verifyToken = require('../util/auth_middleware');
 const connection = require("../config");
+const MemberGroup = require("../models/MemberGroups");
+const Member = require("../models/MemberModel");
 // add loan application
 app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
     try {
@@ -135,6 +137,7 @@ app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
                 "outstanding":emi.outstanding,
                 "EMI_date":loanDate,
                 "remain_EMI":emi.remain_EMI,
+                "user_id":response[0].user_id,
                 "isPaid":0
             });
             });
@@ -176,7 +179,14 @@ app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
               //`loan.id=${req.params.filter}`;
             break;
         }
-        let response = await GroupLoanModel.findAll({where: filter,include: [MemberModel]});
+        let response = await GroupLoanModel.findAll({where: filter,include: [{
+          model:Member,
+          include: [{
+            model:MemberGroup,
+            attributes:['group_name']
+          }]
+        }]
+      });
         return res.status(200).json({
             message: response
           });

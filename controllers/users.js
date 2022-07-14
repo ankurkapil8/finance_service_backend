@@ -8,6 +8,8 @@ const { encrypt,decrypt} = require('../util/crypto');
 const Joi = require('@hapi/joi');
 var jwt = require('jsonwebtoken');
 const { async } = require("q");
+const { Op } = require("sequelize");
+const connection = require("../config");
 //app.set('superSecret', "kanbafood");
 require('dotenv').config()
 router.post("/registration", async (req, res, next) => {
@@ -79,7 +81,7 @@ router.post("/login", async (req, res, next) => {
               response = null;
         }
       if(response!=null){
-         token = jwt.sign({username:response.username,password:response.password,role:response.role}, process.env.JWT_SECRET, { expiresIn: '2h' }); //set jwt token
+         token = jwt.sign({username:response.username,password:response.password,role:response.role,id:response.id}, process.env.JWT_SECRET, { expiresIn: '2h' }); //set jwt token
       }
           return res.status(200).json({
             message: response!=null?"User login successfully!":"Username or password wrong!",
@@ -130,7 +132,9 @@ router.post("/login", async (req, res, next) => {
 router.get("/userList", async(req, res, next) => {
   try {
 
-    let response = await UserModel.findAll();
+    let response = await UserModel.findAll({where: {
+      username: {[Op.ne]: 'admin'}
+    }});
     return res.status(200).json({
       message: response,
     });    

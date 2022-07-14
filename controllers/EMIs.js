@@ -244,7 +244,7 @@ app.get("/allEmis/:dueDate", verifyToken, async(req, res, next) => {
         });
       }
 })
-app.get("/paidEmi/:month/:year", verifyToken, async(req, res, next) => {
+app.get("/paidEmi/:month/:year",verifyToken, async(req, res, next) => {
   try {
       let month = req.params.month;
       let year = req.params.year;

@@ -17,6 +17,7 @@ Emi.init({
   isPaid:{ type: DataTypes.TINYINT },
   EMI_date:{ type: DataTypes.DATEONLY, allowNull: true },
   remain_EMI:{ type: DataTypes.INTEGER, allowNull: true },
+  user_id:{ type: DataTypes.INTEGER},
 }, {
   sequelize: connection,
   createdAt: 'created_at',

@@ -4,8 +4,8 @@ const appE = express();
 const Joi = require('@hapi/joi');
 var ExpenseModel = require('../models/ExpenseModel');
 const { async } = require("q");
-
-app.post("/entry", async(req, res, next) => {
+var verifyToken = require('../util/auth_middleware');
+app.post("/entry",verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         amount: Joi.required(),
@@ -48,7 +48,7 @@ app.post("/entry", async(req, res, next) => {
   
   });
 
-  app.get("/entry/:id", async(req, res, next) => {
+  app.get("/entry/:id",verifyToken, async(req, res, next) => {
     try{
       let filter = {};
       console.log(req.params)
@@ -68,7 +68,7 @@ app.post("/entry", async(req, res, next) => {
     }
   })
 
-  app.delete("/entry/:id", async(req, res, next) => {
+  app.delete("/entry/:id",verifyToken, async(req, res, next) => {
     try{
         const joiSchema = Joi.object({
             id: Joi.required(),
@@ -92,7 +92,7 @@ app.post("/entry", async(req, res, next) => {
     }
   })
   
-  app.put("/entry/:id", async(req, res, next) => {
+  app.put("/entry/:id",verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         id: Joi.required(),

@@ -4,8 +4,9 @@ const appE = express();
 const Joi = require('@hapi/joi');
 var SchemeModel = require('../models/SchemeModel');
 const { async } = require("q");
+const verifyToken = require("../util/auth_middleware");
 
-app.post("/entry", async(req, res, next) => {
+app.post("/entry",verifyToken,async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         scheme_name: Joi.required(),
@@ -45,9 +46,9 @@ app.post("/entry", async(req, res, next) => {
     }
   });
 
-  app.get("/entry", async(req, res, next) => {
+  app.get("/entry",verifyToken,async(req, res, next) => {
     try{
-        let response = await SchemeModel.findAll();
+        let response = await SchemeModel.findAll({where:{}});
         return res.status(200).json({
             message: response
           });
@@ -58,7 +59,7 @@ app.post("/entry", async(req, res, next) => {
     }
   })
 
-  app.delete("/entry/:id", async(req, res, next) => {
+  app.delete("/entry/:id",verifyToken, async(req, res, next) => {
     try{
         const joiSchema = Joi.object({
             id: Joi.required(),

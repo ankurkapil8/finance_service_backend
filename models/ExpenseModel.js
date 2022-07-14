@@ -18,7 +18,11 @@ Expense.init({
   createdAt: 'created_at',
   updatedAt: 'updated_at',
   modelName: 'expense',
-  
+  // hooks: {
+  //   beforeFind: (expense, options) => {
+  //     console.log(expense,options)
+  //     expense.where.user_id = 1;
+  //   }}
 });
 async function createModel(){
   try {

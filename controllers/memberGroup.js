@@ -46,7 +46,7 @@ app.post("/entry", verifyToken, async(req, res, next) => {
 
   app.get("/entry", verifyToken, async(req, res, next) => {
     try{
-        let response = await MemberGroupModel.findAll();
+        let response = await MemberGroupModel.findAll({where:{}});
         return res.status(200).json({
             message: response
           });
