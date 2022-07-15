@@ -5,7 +5,7 @@ const { decrypt} = require('../util/crypto');
 const { Model, DataTypes, Deferrable } = require("sequelize");
 const Member = require("./MemberModel");
 const Scheme = require("./SchemeModel");
-
+const UserModel = require("./UserModel");
 class GROUPLOAN extends Model {}
 GROUPLOAN.init({
   id: { type: DataTypes.INTEGER,primaryKey: true,autoIncrement:true },
@@ -42,6 +42,8 @@ GROUPLOAN.init({
 });
 GROUPLOAN.belongsTo(Member,{foreignKey:{name:'member_id',allowNull: false},constraints:false})
 GROUPLOAN.belongsTo(Scheme,{foreignKey:{name:'scheme_id',allowNull: false},constraints:false})
+GROUPLOAN.belongsTo(UserModel,{foreignKey:'user_id', constraints: false })
+
 async function createModel(){
   try {
     await GROUPLOAN.sync();

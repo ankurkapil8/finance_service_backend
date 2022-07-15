@@ -1,7 +1,7 @@
 const { async } = require("q");
 const connection = require("../config");
 //const TableName = "user";
-const { decrypt} = require('../util/crypto'); 
+const { decrypt, encrypt} = require('../util/crypto'); 
 const { Model, DataTypes, Deferrable } = require("sequelize");
 
 class User extends Model {}
@@ -18,7 +18,15 @@ User.init({
   createdAt: 'created_at',
   updatedAt: 'updated_at',
   modelName: 'users',
-  
+  hooks:{
+    afterFind: (user, options) => {
+      if(Array.isArray(user)){
+        user.forEach((val,i)=>{
+          val.dataValues.password=decrypt(val.dataValues.password)
+        });
+      }
+    },
+  }
 });
 async function createModel(){
   try {

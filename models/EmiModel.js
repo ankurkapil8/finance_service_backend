@@ -5,7 +5,7 @@ const { decrypt} = require('../util/crypto');
 const { Model, DataTypes, Deferrable } = require("sequelize");
 const Member = require("./MemberModel");
 const GROUPLOAN = require("./GroupLoanModel");
-
+const UserModel = require("./UserModel");
 class Emi extends Model {}
 Emi.init({
   id: { type: DataTypes.INTEGER,primaryKey: true,autoIncrement:true },
@@ -17,6 +17,7 @@ Emi.init({
   isPaid:{ type: DataTypes.TINYINT },
   EMI_date:{ type: DataTypes.DATEONLY, allowNull: true },
   remain_EMI:{ type: DataTypes.INTEGER, allowNull: true },
+  user_id:{ type: DataTypes.INTEGER},
 }, {
   sequelize: connection,
   createdAt: 'created_at',
@@ -25,6 +26,7 @@ Emi.init({
   
 });
 Emi.belongsTo(GROUPLOAN,{foreignKey:'loan_account_no', constraints: false })
+Emi.belongsTo(UserModel,{foreignKey:'user_id', constraints: false })
 async function createModel(){
   try {
     await Emi.sync();

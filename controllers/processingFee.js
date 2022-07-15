@@ -3,10 +3,12 @@ const app = express.Router();
 const appE = express();
 const Joi = require('@hapi/joi');
 var ProcessingFeeModel = require('../models/ProcessingFeeModel');
+var UserModel = require('../models/UserModel');
 const { async } = require("q");
+const verifyToken = require("../util/auth_middleware");
 // const { where } = require("sequelize/types");
 
-app.post("/entry", async(req, res, next) => {
+app.post("/entry",verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         amount: Joi.required(),
@@ -48,7 +50,7 @@ app.post("/entry", async(req, res, next) => {
   
   });
 
-  app.get("/entry/:id", async(req, res, next) => {
+  app.get("/entry/:id",verifyToken, async(req, res, next) => {
     try{
       let filter = {};
       console.log(req.params)
@@ -56,7 +58,10 @@ app.post("/entry", async(req, res, next) => {
         filter = {id:req.params.id}
       }
 
-        let response = await ProcessingFeeModel.findAll({where:filter});
+        let response = await ProcessingFeeModel.findAll({where:filter,include: [{
+          model: UserModel,
+          attributes:['id','name']
+      }]});
         return res.status(200).json({
             message: response
           });
@@ -67,7 +72,7 @@ app.post("/entry", async(req, res, next) => {
       });
     }
   })
-  app.delete("/entry/:id", async(req, res, next) => {
+  app.delete("/entry/:id",verifyToken, async(req, res, next) => {
     try{
         const joiSchema = Joi.object({
             id: Joi.required(),
@@ -91,7 +96,7 @@ app.post("/entry", async(req, res, next) => {
     }
   })
 
-  app.put("/entry/:id", async(req, res, next) => {
+  app.put("/entry/:id",verifyToken, async(req, res, next) => {
     try {
       const joiSchema = Joi.object({
         id: Joi.required(),

@@ -58,7 +58,7 @@ const connection = require("../config");
 const { decrypt} = require('../util/crypto'); 
 const { Model, DataTypes, Deferrable } = require("sequelize");
 const { DATEONLY } = require("sequelize");
-
+const UserModel = require("./UserModel");
 class ProcessingFee extends Model {}
 ProcessingFee.init({
   id: { type: DataTypes.INTEGER,primaryKey: true,autoIncrement:true },
@@ -73,6 +73,7 @@ ProcessingFee.init({
   modelName: 'processing_fee',
   
 });
+ProcessingFee.belongsTo(UserModel,{foreignKey:'user_id', constraints: false })
 async function createModel(){
   try {
     await ProcessingFee.sync();

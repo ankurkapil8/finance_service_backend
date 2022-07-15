@@ -8,6 +8,8 @@ const { encrypt,decrypt} = require('../util/crypto');
 const Joi = require('@hapi/joi');
 var jwt = require('jsonwebtoken');
 const { async } = require("q");
+const { Op } = require("sequelize");
+const connection = require("../config");
 //app.set('superSecret', "kanbafood");
 require('dotenv').config()
 router.post("/registration", async (req, res, next) => {
@@ -79,7 +81,7 @@ router.post("/login", async (req, res, next) => {
               response = null;
         }
       if(response!=null){
-         token = jwt.sign({username:response.username,password:response.password,role:response.role}, process.env.JWT_SECRET, { expiresIn: '2h' }); //set jwt token
+         token = jwt.sign({username:response.username,password:response.password,role:response.role,id:response.id}, process.env.JWT_SECRET, { expiresIn: '2h' }); //set jwt token
       }
           return res.status(200).json({
             message: response!=null?"User login successfully!":"Username or password wrong!",
@@ -127,10 +129,17 @@ router.post("/login", async (req, res, next) => {
 //     });
 //   }
 // })
-router.get("/userList", async(req, res, next) => {
+router.get("/userList/:id", async(req, res, next) => {
   try {
+    let filter = {};
+    console.log(req.params)
+    if(req.params.id!="all"){
+      filter = {id:req.params.id}
+    }
 
-    let response = await UserModel.findAll();
+    let response = await UserModel.findAll({where: {
+      username: {[Op.ne]: 'admin'},...filter
+    }});
     return res.status(200).json({
       message: response,
     });    
@@ -153,7 +162,7 @@ router.delete("/deleteUser/:id", async(req, res, next) => {
         }
   
       //let response = await UserModel.deleteUser(req.params.id);
-      let response = await User.destroy({
+      let response = await UserModel.destroy({
         where: {
           id: req.params.id
         }
@@ -221,4 +230,40 @@ router.put("/changeRole", async(req, res, next) => {
     });
   }
 });
+
+router.put("/updateUser", async(req, res, next) => {
+  try {
+    const joiSchema = Joi.object({
+      name:Joi.string().required(),
+      username:Joi.string().required(),
+      password: Joi.string().required(),
+      role: Joi.string().required(),
+      id:Joi.required()
+    }).unknown(true);
+    const validationResult = joiSchema.validate(req.body, { abortEarly: false });
+    if (validationResult.error) {
+      return res.status(500).json({
+        message: validationResult.error.details
+      });
+    }
+    let hashpassword = encrypt(req.body.password);
+    req.body["password"] = hashpassword;
+    let response = await UserModel.update({
+      name:req.body.name,
+      username:req.body.username,
+      password:req.body.password,
+      role:req.body.role
+    },{where:{id:req.body.id}});
+    //let response = await UserModel.changePassword(req.body.password,req.body.id);
+    return res.status(200).json({
+      message: response
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;

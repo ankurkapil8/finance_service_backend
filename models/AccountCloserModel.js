@@ -11,7 +11,8 @@ AccountCloserModel.init({
   all_emi_paid: { type: DataTypes.TINYINT},
   paid_emi_count:{ type: DataTypes.INTEGER},
   settled_amount:{ type: DataTypes.DOUBLE, allowNull: false },
-  earned_interest:{type: DataTypes.DOUBLE}
+  earned_interest:{type: DataTypes.DOUBLE},
+  user_id:{type: DataTypes.INTEGER}
 }, {
   sequelize: connection,
   createdAt: 'created_at',

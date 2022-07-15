@@ -8,6 +8,7 @@ var GroupLoanModel = require('../models/GroupLoanModel');
 const multer = require('multer')
 var verifyToken = require('../util/auth_middleware');
 const Member = require("../models/MemberModel");
+const UserModel = require("../models/UserModel");
 
 app.get("/entry/:member_id", verifyToken, async (req, res, next) => {
   try {
@@ -17,7 +18,10 @@ app.get("/entry/:member_id", verifyToken, async (req, res, next) => {
       //filter = `member_id= ${req.params.member_id}`
       filter = {member_id:req.params.member_id}
     }
-    let response = await MemberModel.findAll({where:filter});
+    let response = await MemberModel.findAll({where:filter,include: [{
+      model: UserModel,
+      attributes:['id','name']
+  }]});
     return res.status(200).json({
       message: response
     });
