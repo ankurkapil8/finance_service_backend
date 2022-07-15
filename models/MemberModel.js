@@ -4,6 +4,7 @@ const connection = require("../config");
 const { decrypt} = require('../util/crypto'); 
 const { Model, DataTypes, Deferrable } = require("sequelize");
 const MemberGroups = require("./MemberGroups");
+const UserModel = require("./UserModel");
 class Member extends Model {}
 Member.init({
   member_id: { type: DataTypes.INTEGER,primaryKey: true,autoIncrement:true },
@@ -36,6 +37,7 @@ Member.init({
   
 });
 Member.belongsTo(MemberGroups,{foreignKey:{name:'member_group_id',allowNull: false},constraints:false})
+Member.belongsTo(UserModel,{foreignKey:'user_id', constraints: false })
 async function createModel(){
   try {
     await Member.sync();

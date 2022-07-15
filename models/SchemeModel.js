@@ -3,6 +3,7 @@ const connection = require("../config");
 //const TableName = "user";
 const { decrypt} = require('../util/crypto'); 
 const { Model, DataTypes, Deferrable } = require("sequelize");
+const UserModel = require("./UserModel");
 
 class Scheme extends Model {}
 Scheme.init({
@@ -23,6 +24,8 @@ Scheme.init({
   modelName: 'scheme',
   
 });
+Scheme.belongsTo(UserModel,{foreignKey:'user_id', constraints: false })
+
 async function createModel(){
   try {
     await Scheme.sync();

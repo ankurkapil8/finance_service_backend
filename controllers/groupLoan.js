@@ -13,6 +13,7 @@ var verifyToken = require('../util/auth_middleware');
 const connection = require("../config");
 const MemberGroup = require("../models/MemberGroups");
 const Member = require("../models/MemberModel");
+const UserModel = require("../models/UserModel");
 // add loan application
 app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
     try {
@@ -185,7 +186,10 @@ app.post("/applyGroupLoan", verifyToken, async(req, res, next) => {
             model:MemberGroup,
             attributes:['group_name']
           }]
-        }]
+        },{
+          model: UserModel,
+          attributes:['id','name']
+      }]
       });
         return res.status(200).json({
             message: response

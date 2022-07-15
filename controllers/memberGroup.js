@@ -3,6 +3,8 @@ const app = express.Router();
 const appE = express();
 const Joi = require('@hapi/joi');
 var MemberGroupModel = require('../models/MemberGroups');
+var UserModel = require('../models/UserModel');
+
 const { async } = require("q");
 var verifyToken = require('../util/auth_middleware');
 app.post("/entry", verifyToken, async(req, res, next) => {
@@ -46,7 +48,10 @@ app.post("/entry", verifyToken, async(req, res, next) => {
 
   app.get("/entry", verifyToken, async(req, res, next) => {
     try{
-        let response = await MemberGroupModel.findAll({where:{}});
+        let response = await MemberGroupModel.findAll({where:{},include: [{
+          model: UserModel,
+          attributes:['id','name']
+      }]});
         return res.status(200).json({
             message: response
           });
@@ -94,7 +99,10 @@ app.post("/entry", verifyToken, async(req, res, next) => {
         });        
       }
 
-        let response = await MemberGroupModel.findOne({where:{group_code:req.params.group_code} });
+        let response = await MemberGroupModel.findOne({where:{group_code:req.params.group_code},include: [{
+          model: UserModel,
+          attributes:['id','name']
+      }] });
         return res.status(200).json({
             message: response
           });

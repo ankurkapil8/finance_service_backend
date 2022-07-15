@@ -11,6 +11,7 @@ const connection = require("../config");
 const { Op } = require("sequelize");
 const Member = require("../models/MemberModel");
 const MemberGroup = require("../models/MemberGroups");
+const UserModel = require("../models/UserModel");
 app.post("/calculateEMI", verifyToken, async(req, res, next) => {
     try {
     const joiSchema = Joi.object({
@@ -140,6 +141,10 @@ app.get("/dueEMIs/:dueDate", verifyToken,async(req, res, next) => {
             model:MemberGroup,
             attributes:['group_name']
           }]
+        },
+        {
+          model:UserModel,
+          attributes:['id','name']
         }]
     }]});
       return res.status(200).json({
@@ -196,7 +201,10 @@ app.get("/entry/:loanAccountNo", verifyToken, async(req, res, next) => {
 
       //let filter = `loan_account_no = "${req.params.loanAccountNo}" AND isPaid=1`;
       let filter = {loan_account_no:req.params.loanAccountNo,isPaid:1}
-      let response = await EmiModel.findAll({where:filter});
+      let response = await EmiModel.findAll({where:filter,include: [{
+        model: UserModel,
+        attributes:['id','name']
+    }]});
       return res.status(200).json({
           message: response
         });
@@ -220,7 +228,10 @@ app.get("/allEmis/:dueDate", verifyToken, async(req, res, next) => {
         include: [{
           model: GroupLoanModel,
           on: { '$emi.loan_account_no$' : { [Op.col]: 'group_loan.loan_account_no'}}
-        }]
+        },{
+          model: UserModel,
+          attributes:['id','name']
+      }]
       });
       response.map((res)=>{
         if(res.isPaid==1){
@@ -254,7 +265,10 @@ app.get("/paidEmi/:month/:year",verifyToken, async(req, res, next) => {
         include: [{
           model: GroupLoanModel,
           on: { '$emi.loan_account_no$' : { [Op.col]: 'group_loan.loan_account_no'}}
-      }]
+      },{
+        model: UserModel,
+        attributes:['id','name']
+    }]
        
      })
 

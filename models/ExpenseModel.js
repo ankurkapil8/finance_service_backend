@@ -4,6 +4,7 @@ const connection = require("../config");
 const { decrypt} = require('../util/crypto'); 
 const { Model, DataTypes, Deferrable } = require("sequelize");
 const { DATEONLY } = require("sequelize");
+const UserModel = require("./UserModel");
 
 class Expense extends Model {}
 Expense.init({
@@ -24,6 +25,8 @@ Expense.init({
   //     expense.where.user_id = 1;
   //   }}
 });
+Expense.belongsTo(UserModel,{foreignKey:'user_id', constraints: false })
+
 async function createModel(){
   try {
     await Expense.sync();

@@ -11,7 +11,7 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, config.JWT_SECRET);
     req.user = decoded;
-    if(decoded && decoded.role!="admin"){
+    if(decoded && decoded.role!="admin" && decoded.role!="checker"){
       connection.addHook('beforeFindAfterOptions', 'notifyUsers',(instance,options) => {
         console.log(instance.where);
         if(Array.isArray(instance.where)){

@@ -3,6 +3,7 @@ const app = express.Router();
 const appE = express();
 const Joi = require('@hapi/joi');
 var ProcessingFeeModel = require('../models/ProcessingFeeModel');
+var UserModel = require('../models/UserModel');
 const { async } = require("q");
 const verifyToken = require("../util/auth_middleware");
 // const { where } = require("sequelize/types");
@@ -57,7 +58,10 @@ app.post("/entry",verifyToken, async(req, res, next) => {
         filter = {id:req.params.id}
       }
 
-        let response = await ProcessingFeeModel.findAll({where:filter});
+        let response = await ProcessingFeeModel.findAll({where:filter,include: [{
+          model: UserModel,
+          attributes:['id','name']
+      }]});
         return res.status(200).json({
             message: response
           });

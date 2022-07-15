@@ -3,6 +3,8 @@ const app = express.Router();
 const appE = express();
 const Joi = require('@hapi/joi');
 var SchemeModel = require('../models/SchemeModel');
+var UserModel = require('../models/UserModel');
+
 const { async } = require("q");
 const verifyToken = require("../util/auth_middleware");
 
@@ -48,7 +50,10 @@ app.post("/entry",verifyToken,async(req, res, next) => {
 
   app.get("/entry",verifyToken,async(req, res, next) => {
     try{
-        let response = await SchemeModel.findAll({where:{}});
+        let response = await SchemeModel.findAll({where:{},include: [{
+          model: UserModel,
+          attributes:['id','name']
+      }]});
         return res.status(200).json({
             message: response
           });
