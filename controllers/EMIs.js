@@ -106,6 +106,8 @@ app.post("/calculateEMI", verifyToken, async(req, res, next) => {
       nextEMIDate = new Date(loanDate.setDate(loanDate.getDate()+15))
     }else if(EMI_payout=="village"){
       nextEMIDate = moment(firstEmiDate).add(w, 'weeks');
+    }else if(EMI_payout=="daily"){
+      nextEMIDate = new Date(loanDate.setDate(loanDate.getDate()+1))
     }
     outstanding = outstanding-EMIPerTenure;
      let emi = {

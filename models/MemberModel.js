@@ -29,6 +29,8 @@ Member.init({
   bank_account: { type: DataTypes.STRING(45), allowNull: true },
   bank_ifsc_code: { type: DataTypes.STRING(45), allowNull: true },
   bank_account_holder: { type: DataTypes.STRING(45), allowNull: true },
+  qualification:{ type: DataTypes.STRING(45), allowNull: true },
+  spouse:{ type: DataTypes.STRING(45), allowNull: true }
 }, {
   sequelize: connection,
   createdAt: 'created_at',
