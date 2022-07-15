@@ -143,11 +143,11 @@ app.get("/dueEMIs/:dueDate", verifyToken,async(req, res, next) => {
             model:MemberGroup,
             attributes:['group_name']
           }]
-        },
-        {
-          model:UserModel,
-          attributes:['id','name']
         }]
+    },
+    {
+      model:UserModel,
+      attributes:['id','name']
     }]});
       return res.status(200).json({
           message: response
