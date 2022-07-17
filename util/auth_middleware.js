@@ -11,7 +11,8 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, config.JWT_SECRET);
     req.user = decoded;
-    if(decoded && decoded.role!="admin" && decoded.role!="checker"){
+    if(decoded && decoded.role.toLowerCase()!="admin" && decoded.role!="checker"){
+      console.log("add hook")
       connection.addHook('beforeFindAfterOptions', 'notifyUsers',(instance,options) => {
         console.log(instance.where);
         if(Array.isArray(instance.where)){
@@ -22,13 +23,10 @@ const verifyToken = (req, res, next) => {
         }
         //console.log("add hook",connection.);
       });
-      connection.addHook('afterFind', (model,option) => {
+      connection.addHook('afterQuery', (model,option) => {
+        console.log("remove hook")
         connection.removeHook("beforeFindAfterOptions","notifyUsers");
       })
-      // connection.addHook('beforeFindAfterOptions', (model,option) => {
-      //   console.log(model,option)
-      // })
-
     }
 
   } catch (err) {
