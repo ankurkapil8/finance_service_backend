@@ -10,7 +10,7 @@ class GROUPLOAN extends Model {}
 GROUPLOAN.init({
   id: { type: DataTypes.INTEGER,primaryKey: true,autoIncrement:true },
   loan_account_no: { type: DataTypes.STRING(45), allowNull: true},
-  scheme_id: { type: DataTypes.DataTypes.STRING(45), allowNull: true},
+  scheme_id: { type: DataTypes.STRING(45), allowNull: true},
   member_id:{ type: DataTypes.INTEGER},
   village_id:{ type: DataTypes.INTEGER, allowNull: true },
   user_id:{ type: DataTypes.INTEGER, allowNull: true },
