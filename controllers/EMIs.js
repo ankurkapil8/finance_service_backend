@@ -135,7 +135,7 @@ app.get("/dueEMIs/:dueDate", verifyToken,async(req, res, next) => {
       let response = await EmiModel.findAll({where:filter,include: [{
         model: GroupLoanModel,
         on: { '$emi.loan_account_no$' : { [Op.col]: 'group_loan.loan_account_no'}},
-        attributes:['loan_account_no'],
+        attributes:['loan_account_no','EMI_payout'],
         include:[{
           model:Member,
           attributes:['member_group_id','member_name','member_id','mobile_number'],
