@@ -7,7 +7,7 @@ const UserModel = require("./UserModel");
 
 class Village extends Model {}
 Village.init({
-  id: { type: DataTypes.INTEGER,primaryKey: true,autoIncrement:true },
+  id: { type: DataTypes.INTEGER,primaryKey: true,autoIncrement: true },
   village_code: { type: DataTypes.STRING(45), allowNull: true},
   village_name: { type: DataTypes.STRING(45), allowNull: true},
   village_address:{ type: DataTypes.STRING(100)},
