@@ -4,7 +4,7 @@ const connection = require("../config");
 const { decrypt} = require('../util/crypto'); 
 const { Model, DataTypes, Deferrable } = require("sequelize");
 const UserModel = require("./UserModel");
-
+const VillageModel = require("./VillageModel");
 class MemberGroup extends Model {}
 MemberGroup.init({
   group_code: { type: DataTypes.STRING(45),primaryKey: true },
@@ -12,6 +12,7 @@ MemberGroup.init({
   remark: { type: DataTypes.STRING(45), allowNull: true},
   status:{ type: DataTypes.BOOLEAN},
   user_id:{ type: DataTypes.INTEGER, allowNull: true },
+  village_id:{ type: DataTypes.INTEGER, allowNull: true },
 }, {
   sequelize: connection,
   createdAt: 'created_at',
@@ -20,7 +21,7 @@ MemberGroup.init({
   
 });
 MemberGroup.belongsTo(UserModel,{foreignKey:'user_id', constraints: false })
-
+MemberGroup.belongsTo(VillageModel,{foreignKey:'village_id', constraints: false })
 async function createModel(){
   try {
     await MemberGroup.sync();
